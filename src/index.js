@@ -38,16 +38,19 @@ async function run() {
   console.log(`Classified ${classifiedOffers.length} job offers.`);
 
   // 4. Deterministic filters
-  const filteredOffers = classifiedOffers.filter((offer) => filters(offer, config));
+  const filteredOffers = classifiedOffers.filter((offer) =>
+    filters(offer, config),
+  );
   console.log(`Filtered down to ${filteredOffers.length} job offers.`);
 
   // 5. Deduplication (by title/location/salary)
   const seenOffers = await storage.load();
   const dedupedOffers = filteredOffers.filter((offer) => {
-    return !seenOffers.some((seen) =>
-      seen.title === offer.title &&
-      seen.location === offer.location &&
-      seen.salary === offer.salary
+    return !seenOffers.some(
+      (seen) =>
+        seen.title === offer.title &&
+        seen.location === offer.location &&
+        seen.salary === offer.salary,
     );
   });
   console.log(`Deduplicated to ${dedupedOffers.length} new job offers.`);
@@ -57,9 +60,12 @@ async function run() {
 
   // 6. Daily summary output
   if (dedupedOffers.length > 0) {
-    const summary = dedupedOffers.map((offer, i) =>
-      `${i + 1}. ${offer.title} – ${offer.location} – ${offer.salary}`
-    ).join('\n');
+    const summary = dedupedOffers
+      .map(
+        (offer, i) =>
+          `${i + 1}. ${offer.title} – ${offer.location} – ${offer.salary}`,
+      )
+      .join('\n');
     await notifier(summary, config);
     console.log('Summary sent.');
   } else {
