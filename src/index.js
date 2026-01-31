@@ -36,18 +36,29 @@ async function run() {
   const normalizedOffers = allOffers.map(normalizer);
   console.log(`Normalized ${normalizedOffers.length} job offers.`);
 
-  // 3. AI classification with throttling (1 request per 1.2s)
-  async function throttleAI(offers, delayMs = 1200) {
-    const results = [];
-    for (const offer of offers) {
-      results.push(await ai(offer));
-      await new Promise(res => setTimeout(res, delayMs));
+  // 3. AI classification with throttling (1 request per 1.2s), or skip if disabled
+  let classifiedOffers;
+  if (config.aiClassification) {
+    async function throttleAI(offers, delayMs = 1200) {
+      const results = [];
+      for (const offer of offers) {
+        results.push(await ai(offer));
+        await new Promise((res) => setTimeout(res, delayMs));
+      }
+      return results;
     }
-    return results;
+    classifiedOffers = await throttleAI(normalizedOffers);
+    console.log(`Classified ${classifiedOffers.length} job offers.`);
+  } else {
+    classifiedOffers = normalizedOffers.map((offer) => ({
+      ...offer,
+      frontend: true,
+      seniority: 'unknown',
+      tech: offer.tech || [],
+      spam: false,
+    }));
+    console.log('AI classification skipped.');
   }
-
-  const classifiedOffers = await throttleAI(normalizedOffers);
-  console.log(`Classified ${classifiedOffers.length} job offers.`);
 
   // 4. Deterministic filters
   const filteredOffers = classifiedOffers.filter((offer) =>
