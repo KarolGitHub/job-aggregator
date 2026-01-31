@@ -7,11 +7,14 @@ module.exports = async function fetchNoFluffJobs() {
     const url = 'https://nofluffjobs.com/api/search/posting?criteria=frontend';
     const response = await axios.get(url);
     // Map to unified offer format
-    return response.data.postings.map(offer => ({
+    return response.data.postings.map((offer) => ({
       source: 'NoFluffJobs',
       title: offer.title,
       location: offer.city || offer.region || 'Remote',
-      salary: offer.salary_from && offer.salary_to ? `${offer.salary_from}–${offer.salary_to} ${offer.salary_currency}` : 'N/A',
+      salary:
+        offer.salary_from && offer.salary_to
+          ? `${offer.salary_from}–${offer.salary_to} ${offer.salary_currency}`
+          : 'N/A',
       description: offer.description,
       url: offer.url,
       company: offer.company,

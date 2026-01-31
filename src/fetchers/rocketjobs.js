@@ -6,7 +6,7 @@ module.exports = async function fetchRocketJobs() {
   try {
     const parser = new RSSParser();
     const feed = await parser.parseURL('https://rocketjobs.pl/feed/frontend');
-    return feed.items.map(item => ({
+    return feed.items.map((item) => ({
       source: 'RocketJobs.pl',
       title: item.title,
       location: item.location || 'Remote',

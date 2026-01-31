@@ -10,9 +10,15 @@ const config = require('./config');
 async function run() {
   // 1. Fetch job offers from all sources
   const sources = [
-    require('./fetchers/nofluffjobs'),
+    require('./fetchers/bulldogjob'),
+    require('./fetchers/goldenline'),
+    require('./fetchers/indeed'),
+    require('./fetchers/jobspl'),
     require('./fetchers/justjoinit'),
-    // Add more fetchers here
+    require('./fetchers/linkedin'),
+    require('./fetchers/nofluffjobs'),
+    require('./fetchers/pracujpl'),
+    require('./fetchers/rocketjobs'),
   ];
 
   let allOffers = [];

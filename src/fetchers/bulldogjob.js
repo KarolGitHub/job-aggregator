@@ -5,8 +5,10 @@ const RSSParser = require('rss-parser');
 module.exports = async function fetchBulldogJob() {
   try {
     const parser = new RSSParser();
-    const feed = await parser.parseURL('https://bulldogjob.pl/feeds/offers/frontend');
-    return feed.items.map(item => ({
+    const feed = await parser.parseURL(
+      'https://bulldogjob.pl/feeds/offers/frontend',
+    );
+    return feed.items.map((item) => ({
       source: 'BulldogJob',
       title: item.title,
       location: item.location || 'Remote',
