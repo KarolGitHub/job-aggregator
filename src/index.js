@@ -33,10 +33,38 @@ async function run() {
 
   // 3. AI classification
   const classifiedOffers = await Promise.all(
-    normalizedOffers.map(offer => ai(offer))
+    normalizedOffers.map((offer) => ai(offer)),
   );
   console.log(`Classified ${classifiedOffers.length} job offers.`);
-  // Next: filtering, deduplication, notification
+
+  // 4. Deterministic filters
+  const filteredOffers = classifiedOffers.filter((offer) => filters(offer, config));
+  console.log(`Filtered down to ${filteredOffers.length} job offers.`);
+
+  // 5. Deduplication (by title/location/salary)
+  const seenOffers = await storage.load();
+  const dedupedOffers = filteredOffers.filter((offer) => {
+    return !seenOffers.some((seen) =>
+      seen.title === offer.title &&
+      seen.location === offer.location &&
+      seen.salary === offer.salary
+    );
+  });
+  console.log(`Deduplicated to ${dedupedOffers.length} new job offers.`);
+
+  // Save new offers for future deduplication
+  await storage.save(seenOffers.concat(dedupedOffers));
+
+  // 6. Daily summary output
+  if (dedupedOffers.length > 0) {
+    const summary = dedupedOffers.map((offer, i) =>
+      `${i + 1}. ${offer.title} – ${offer.location} – ${offer.salary}`
+    ).join('\n');
+    await notifier(summary, config);
+    console.log('Summary sent.');
+  } else {
+    console.log('No new offers to notify.');
+  }
 }
 
 run();
