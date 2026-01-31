@@ -30,7 +30,13 @@ async function run() {
   // 2. Normalize data
   const normalizedOffers = allOffers.map(normalizer);
   console.log(`Normalized ${normalizedOffers.length} job offers.`);
-  // Next: AI classification, filtering, etc.
+
+  // 3. AI classification
+  const classifiedOffers = await Promise.all(
+    normalizedOffers.map(offer => ai(offer))
+  );
+  console.log(`Classified ${classifiedOffers.length} job offers.`);
+  // Next: filtering, deduplication, notification
 }
 
 run();
