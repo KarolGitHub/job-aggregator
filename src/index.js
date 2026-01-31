@@ -8,13 +8,29 @@ const notifier = require('./notifier');
 const config = require('./config');
 
 async function run() {
-  // 1. Fetch job offers
+  // 1. Fetch job offers from all sources
+  const sources = [
+    require('./fetchers/nofluffjobs'),
+    require('./fetchers/justjoinit'),
+    // Add more fetchers here
+  ];
+
+  let allOffers = [];
+  for (const fetcher of sources) {
+    try {
+      const offers = await fetcher();
+      allOffers = allOffers.concat(offers);
+    } catch (err) {
+      console.error('Fetcher error:', err);
+    }
+  }
+
+  console.log(`Fetched ${allOffers.length} job offers.`);
+
   // 2. Normalize data
-  // 3. AI classification
-  // 4. Deterministic filters
-  // 5. Deduplication
-  // 6. Daily summary output
-  // ...implementation...
+  const normalizedOffers = allOffers.map(normalizer);
+  console.log(`Normalized ${normalizedOffers.length} job offers.`);
+  // Next: AI classification, filtering, etc.
 }
 
 run();
