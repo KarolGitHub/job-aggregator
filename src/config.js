@@ -1,7 +1,7 @@
 // User filters & thresholds
 module.exports = {
-  preferredLocations: ['Remote', 'Kraków'],
-  minSalary: 15000,
+  preferredLocations: ['Remote', 'Rzeszów'],
+  minSalary: 8000,
   allowedTech: ['Vue', 'React'],
-  deliveryMethod: 'email', // 'email' | 'slack' | 'telegram'
+  deliveryMethod: 'slack', // 'email' | 'slack' | 'telegram'
 };

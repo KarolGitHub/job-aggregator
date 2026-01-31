@@ -1,5 +1,4 @@
 // Main entry point
-const fetchers = require('./fetchers');
 const normalizer = require('./normalizer');
 const ai = require('./ai');
 const filters = require('./filters');
@@ -37,10 +36,17 @@ async function run() {
   const normalizedOffers = allOffers.map(normalizer);
   console.log(`Normalized ${normalizedOffers.length} job offers.`);
 
-  // 3. AI classification
-  const classifiedOffers = await Promise.all(
-    normalizedOffers.map((offer) => ai(offer)),
-  );
+  // 3. AI classification with throttling (1 request per 1.2s)
+  async function throttleAI(offers, delayMs = 1200) {
+    const results = [];
+    for (const offer of offers) {
+      results.push(await ai(offer));
+      await new Promise(res => setTimeout(res, delayMs));
+    }
+    return results;
+  }
+
+  const classifiedOffers = await throttleAI(normalizedOffers);
   console.log(`Classified ${classifiedOffers.length} job offers.`);
 
   // 4. Deterministic filters
